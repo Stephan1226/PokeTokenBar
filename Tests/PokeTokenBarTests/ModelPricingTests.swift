@@ -5,6 +5,7 @@ final class ModelPricingTests: XCTestCase {
     func testCurrentOpenAIStandardRates() {
         XCTAssertEqual(ModelPricing.rate(for: "gpt-6-astra"), .perMillion(10, 50, 12.5, 1))
         XCTAssertEqual(ModelPricing.rate(for: "gpt-6-sol"), .perMillion(2, 10, 2.5, 0.2))
+        XCTAssertEqual(ModelPricing.rate(for: "gpt-6.1-sol"), .perMillion(2, 10, 2.5, 0.1))
         XCTAssertEqual(ModelPricing.rate(for: "gpt-6-luna"), .perMillion(0.1, 0.5, 0.125, 0.01))
         XCTAssertEqual(ModelPricing.rate(for: "gpt-5.6-sol"), .perMillion(4, 20, 5, 0.4))
         XCTAssertEqual(ModelPricing.rate(for: "gpt-5.6-terra"), .perMillion(2, 12, 2.5, 0.2))
@@ -93,6 +94,7 @@ final class ModelPricingTests: XCTestCase {
         XCTAssertEqual(over, 0.33501, accuracy: 1e-12)
         XCTAssertEqual(try XCTUnwrap(ModelPricing.estimatedCost(model: "gpt-6-luna", input: 272_001, output: 1_000, cacheWrite: 0, cacheRead: 0)), 0.0551502, accuracy: 1e-12)
         XCTAssertEqual(try XCTUnwrap(ModelPricing.estimatedCost(model: "gpt-6-sol", input: 272_001, output: 1_000, cacheWrite: 0, cacheRead: 0)), 1.103004, accuracy: 1e-12)
+        XCTAssertEqual(try XCTUnwrap(ModelPricing.estimatedCost(model: "gpt-6.1-sol", input: 272_001, output: 1_000, cacheWrite: 0, cacheRead: 0)), 1.103004, accuracy: 1e-12)
         // An older model does not inherit the newer model's long-context surcharge.
         XCTAssertEqual(try XCTUnwrap(ModelPricing.estimatedCost(model: "gpt-5.3-codex", input: 300_000, output: 0, cacheWrite: 0, cacheRead: 0)), 0.525, accuracy: 1e-12)
     }
@@ -135,6 +137,7 @@ final class ModelPricingTests: XCTestCase {
     func testCacheWriteAndInvalidBuckets() throws {
         XCTAssertEqual(try XCTUnwrap(ModelPricing.estimatedCost(model: "gpt-5.6-luna", input: 100_000, output: 1_000, cacheWrite: 10_000, cacheRead: 100_000)), 0.0257, accuracy: 1e-12)
         XCTAssertEqual(try XCTUnwrap(ModelPricing.estimatedCost(model: "gpt-6-luna", input: 100_000, output: 0, cacheWrite: 0, cacheRead: 0)), 0.01, accuracy: 1e-12)
+        XCTAssertEqual(try XCTUnwrap(ModelPricing.estimatedCost(model: "gpt-6.1-sol", input: 100_000, output: 1_000, cacheWrite: 10_000, cacheRead: 100_000)), 0.245, accuracy: 1e-12)
         XCTAssertNil(ModelPricing.estimatedCost(model: "gpt-5.5", input: -1, output: 0, cacheWrite: 0, cacheRead: 0))
         XCTAssertEqual(ModelPricing.estimatedCost(model: "gpt-5.5", input: 0, output: 0, cacheWrite: 0, cacheRead: 0), 0)
     }

@@ -57,6 +57,8 @@ final class UsageCostTests: XCTestCase {
         XCTAssertEqual(LocalUsageReader.daily(entries: [autoReview], localDay: autoReview.localDay)?.costCoverage, .unavailable)
         let luna = entry("gpt-6-luna")
         XCTAssertEqual(LocalUsageReader.daily(entries: [luna], localDay: luna.localDay)?.costCoverage, .estimate)
+        let sol = entry("gpt-6.1-sol")
+        XCTAssertEqual(LocalUsageReader.daily(entries: [sol], localDay: sol.localDay)?.costCoverage, .estimate)
         let entries = [known, unknown, entry(cost: 0)]
         let daily = try XCTUnwrap(LocalUsageReader.daily(entries: entries, localDay: known.localDay))
         let enrichment = ProviderEnrichment.local(entries: entries)
