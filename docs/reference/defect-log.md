@@ -1293,3 +1293,19 @@ read_when:
   fail the historical-chart assertion. Keep explicit pixel density, candidate diagnostics,
   and both CI fixture PNGs so recognition failures can be checked against rendered pixels.
   Other OCR harnesses passed the same CI runs; this repair is limited to the failing fixture.
+
+- **A wider navigation label must not squeeze numeric period summaries.** Adding the localized
+  recap capsule to the home's fixed-width summary row left too little space for its week/month
+  labels and costs: the real English and German popovers split `$31.64` and `$121.30` across
+  lines. The existing production render used Korean with costs disabled, so it never exercised
+  that combination. Preserve the period totals' intrinsic width and let `ViewThatFits` move
+  the recap button to a trailing row when the inline arrangement does not fit. If the two period
+  groups alone exceed the content width (German `Nicht verfügbar`), stack those groups too;
+  forcing their combined intrinsic width expands and clips the entire popover. The sibling
+  Claude account period row has no recap control and does not share this trigger.
+  `testRecapLabelKeepsPeriodCostsOnOneLine` renders the full production popover in English
+  and German with costs enabled and requires each complete amount in one top-ranked OCR
+  observation. Restoring the previous inline row makes both languages fail; joining OCR
+  observations would conceal the broken digits. `testUnavailablePeriodCostsKeepGermanHomeWithinPopover`
+  also requires the full leading home captions and both unavailable labels, so a clipped
+  popover cannot pass merely because its trailing recap button remains visible.
