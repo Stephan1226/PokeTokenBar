@@ -1309,3 +1309,9 @@ read_when:
   observations would conceal the broken digits. `testUnavailablePeriodCostsKeepGermanHomeWithinPopover`
   also requires the full leading home captions and both unavailable labels, so a clipped
   popover cannot pass merely because its trailing recap button remains visible.
+  Match OCR recognition languages to each fixture: inheriting Korean for English made CI
+  read `This` as `Thls` despite correct pixels. The period-cost fixtures retain strict labels
+  and complete amounts; the original Korean quiet-day fixtures own the strict chart assertion.
+  On the same CI image, English-only recognition corrected the period label but still read
+  the unrelated chart caption `Daily` as `Dally`; do not teach OCR that misspelling or relax
+  the original chart guard to make a period-row regression pass.

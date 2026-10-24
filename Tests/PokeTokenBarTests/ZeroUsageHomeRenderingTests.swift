@@ -139,7 +139,11 @@ final class ZeroUsageHomeRenderingTests: XCTestCase {
         XCTAssertGreaterThanOrEqual(CGFloat(bitmap.pixelsHigh) / bounds.height, 2)
         host.cacheDisplay(in: bounds, to: bitmap)
         let request = VNRecognizeTextRequest()
-        request.recognitionLanguages = language == .de ? ["de-DE", "en-US"] : ["ko-KR", "en-US"]
+        switch language {
+        case .en: request.recognitionLanguages = ["en-US"]
+        case .de: request.recognitionLanguages = ["de-DE", "en-US"]
+        default: request.recognitionLanguages = ["ko-KR", "en-US"]
+        }
         request.recognitionLevel = .accurate
         try VNImageRequestHandler(cgImage: XCTUnwrap(bitmap.cgImage)).perform([request])
         let text = request.results?.compactMap { $0.topCandidates(1).first?.string }.joined(separator: " ") ?? ""
@@ -180,12 +184,15 @@ final class ZeroUsageHomeRenderingTests: XCTestCase {
                 $0.topCandidates(1).first?.string.replacingOccurrences(of: " ", with: "").contains(unavailable) == true
             }.count, 2, "Both unavailable period costs must stay visible\n\(diagnostics)")
         }
-        if history && day > 1 {
-            XCTAssertTrue(chartVisible,
-                          "Historical chart missing: \(text)\n\(diagnostics)")
-        } else {
-            XCTAssertFalse(chartVisible,
-                           "Empty history must not invent a chart\n\(diagnostics)")
+        if costs == nil {
+            // The original quiet-day fixtures own chart coverage; cost fixtures target the period row.
+            if history && day > 1 {
+                XCTAssertTrue(chartVisible,
+                              "Historical chart missing: \(text)\n\(diagnostics)")
+            } else {
+                XCTAssertFalse(chartVisible,
+                               "Empty history must not invent a chart\n\(diagnostics)")
+            }
         }
         if let output = ProcessInfo.processInfo.environment["PTB_ZERO_USAGE_SCREENSHOT_DIR"] {
             let directory = URL(fileURLWithPath: output)
